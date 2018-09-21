@@ -1,0 +1,40 @@
+package com.cts.corda.etf.util;
+
+import com.cts.corda.etf.model.EtfTradeRequest;
+import com.cts.corda.etf.model.EtfTradeResponse;
+import com.cts.bfs.etf.corda.state.EtfTradeState;
+import net.corda.core.flows.FlowException;
+import net.corda.core.utilities.UntrustworthyData;
+
+public class SerilazationHelper {
+
+    public static EtfTradeResponse getEtfTradeResponse(UntrustworthyData<EtfTradeResponse> output) throws FlowException {
+        return output.unwrap(new UntrustworthyData.Validator<EtfTradeResponse, EtfTradeResponse>() {
+            @Override
+            public EtfTradeResponse validate(EtfTradeResponse data) throws FlowException {
+                return data;
+            }
+        });
+    }
+
+    public static EtfTradeRequest getEtfTradeRequest(UntrustworthyData<EtfTradeRequest> inputFromAP) throws FlowException {
+        return inputFromAP.unwrap(new UntrustworthyData.Validator<EtfTradeRequest, EtfTradeRequest>() {
+            @Override
+            public EtfTradeRequest validate(EtfTradeRequest data) throws FlowException {
+                System.out.println("**In validate method for custodian flow received data " + data);
+                return data;
+            }
+        });
+    }
+
+
+    public static EtfTradeState getEtfTradeState(UntrustworthyData<EtfTradeState> output) throws FlowException {
+        return output.unwrap(new UntrustworthyData.Validator<EtfTradeState, EtfTradeState>() {
+            @Override
+            public EtfTradeState validate(EtfTradeState data) throws FlowException {
+                return data;
+            }
+        });
+    }
+
+}

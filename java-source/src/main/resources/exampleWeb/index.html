@@ -1,0 +1,375 @@
+<!-- Define your frontend here. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ETF v2 CorDapp</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+  </style>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0-rc.1/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/createIOUModal.js"></script>
+    <script src="js/createETFModal.js"></script>
+    <script src="js/issueCashModal.js"></script>
+    <script src="js/selfIssueEtfModal.js"></script>
+    <script src="js/transferModal.js"></script>
+    <script src="js/settleModal.js"></script>
+
+</head>
+
+<body ng-app="demoAppModule" ng-controller="DemoAppCtrl as demoApp" class="bg-primary">
+<nav class="navbar navbar-primary">
+
+        <div class="navbar-primary">
+            <a class="navbar-primary" href="#"><font color="white"> {{demoApp.thisNode}}</font>></a>
+        </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <img align="left" src="images/ETF.jpg" class="img-rounded" alt="Cinque Terre" width="150" height="100">
+                    <img align="right" src="images/cani.jpg" class="img-rounded" alt="Cinque Terre" width="150" height="100">
+                    <h3 align="center" style="font-size:50px;color:DogerBlue" class="panel-title">ETF BOOKING APP</h3>
+                </div>
+                <div align="center"  class="panel panel-info">
+                    <button ng-click="demoApp.openBuySellETFModal()" type="button" class="btn btn-info btn-lg" >Buy-Sell ETF</button>
+                    <button ng-click="demoApp.openIssueCashModal()" type="button" class="btn btn-info btn-lg">Issue cash</button>
+                    <button ng-click="demoApp.openSelfIssueEtfModal()" type="button" class="btn btn-info btn-lg">Issue Etf</button>
+                    <button ng-click="demoApp.refresh()" type="button" class="btn btn-primary btn-lg"><span
+                            class="glyphicon glyphicon-refresh"></span></button>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+</nav>
+
+<script type="text/ng-template" id="createETFModal.html" >
+    <form class="bg-primary">
+    <div >
+        <h4 align="center" style="font-size:25px;color:DogerBlue" class="modal-title">Add new ETF Request</h4>
+    </div>
+
+      <div class="modal-body" >
+
+    <div class="form-group">
+                <label class="radio-inline">
+                    <input type="radio" value="buy" name="btnn" ng-model="createETFModal.form.buysell" class="bg-default"/>Buy</label>
+                    <label class="radio-inline">
+                <input type="radio" name="btnn" ng-model="createETFModal.form.buysell" value="sell"/>Sell
+                    </label>
+
+                <!--a class="undo" ng-click="createETFModal.form.buysell = null">&otimes;</a-->
+            </div>
+            <div class="form-group">
+                <label for="createETFCounterparty" class="control-label">Counter-party:</label>
+                <select ng-model="createETFModal.form.counterparty" class="form-control" id="createETFCounterparty"
+                        ng-options="peer as peer for peer in createETFModal.peers">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="createETFName" class="control-label">ETF Name :</label>
+                <input type="text" ng-model="createETFModal.form.etfName" class="form-control" id="createETFName">
+            </div>
+            <div class="form-group">
+                <label for="createETFCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="createETFModal.form.currency" class="form-control" id="createETFCurrency">
+            </div>
+            <div class="form-group">
+                <label for="createETFQuantity" class="control-label">Quantity<span class="label label-info"> (Int):</span></label>
+                <input type="text" ng-model="createETFModal.form.quantity" class="form-control" ng-init="createETFModal.form.quantity='0'" id="createETFQuantity">
+            </div>
+        <div class="form-group">
+
+            <label for="createETFAmount" class="control-label">Amount<span class="label label-info"> (Int)</span><span class="label label-success"> (NAV 10 GBP) :</span></label>
+          <p> {{ createETFModal.form.quantity*10 }} </p>
+            <!--input  type="text" ng-model="createETFModal.form.amount" class="form-control" id="createETFAmount" value="{{ createETFModal.form.quantity }}" -->
+        </div>
+            <div ng-show="createETFModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid ETF creation parameters
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="createETFModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="createETFModal.create()" type="button" class="btn btn-info">Submit</button>
+        </div>
+    </form></script>
+</script>
+
+<script type="text/ng-template" id="createETFMsgModal.html">
+    <div class="modal-body" id="create-etf-modal-body">
+       <p align="center"><font color="blue"> {{ createETFMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<script type="text/ng-template" id="issueCashModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"  class="modal-title">Self-issue cash</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="issueCashCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="issueCashModal.form.currency" class="form-control" id="issueCashCurrency">
+            </div>
+            <div class="form-group">
+                <label for="issueCashAmount" class="control-label">Amount (Int):</label>
+                <input type="text" ng-model="issueCashModal.form.amount" class="form-control" id="issueCashAmount">
+            </div>
+            <div ng-show="issueCashModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid cash issuance parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="issueCashModal.cancel()" type="button" class="btn btn-default">Close</button>
+            <button ng-click="issueCashModal.issue()" type="button" class="btn btn-primary">Issue cash</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="issueCashMsgModal.html">
+    <div class="modal-body" id="issue-cash-modal-body">
+        <p align="center"><font color="blue"> {{ issueCashMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="selfIssueEtfModal.html">
+    <form class="bg-primary">
+    <div class="modal-header">
+        <h4 align="center" style="font-size:25px;color:DogerBlue" class="modal-title">issue Etf</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="selfIssueEtf" class="control-label">ETF Name:</label>
+                <input type="text" ng-model="selfIssueEtfModal.form.etfName" class="form-control" id="selfIssueEtf">
+            </div>
+            <div class="form-group">
+                <label for="selfIssueEtfQty" class="control-label">Quantity (Int):</label>
+                <input type="text" ng-model="selfIssueEtfModal.form.quantity" class="form-control" id="selfIssueEtfQty">
+            </div>
+            <div ng-show="selfIssueEtfModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid self Etf issuance parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="selfIssueEtfModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="selfIssueEtfModal.issue()" type="button" class="btn btn-info">Issue ETF</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="selfIssueEtfMsgModal.html">
+    <div class="modal-body" id="self-issue-etf-modal-body">
+        <p align="center"><font color="blue"> {{ selfIssueEtfMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="transferModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"  class="modal-title">Transfer ETF</h4>
+    </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="transferCounterparty" class="control-label">Counter-party:</label>
+                <select ng-model="transferModal.form.counterparty" class="form-control" id="transferCounterparty"
+                        ng-options="peer as peer for peer in transferModal.peers">
+                </select>
+            </div>
+            <div ng-show="transferModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid ETF transfer parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="transferModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="transferModal.transfer()" type="button" class="btn btn-info">Transfer</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="transferMsgModal.html">
+    <div class="modal-body" id="transfer-modal-body">
+        <p align="center"><font color="blue"> {{ transferMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<script type="text/ng-template" id="settleModal.html">
+    <form class="bg-primary">
+        <div class="modal-header">
+            <h4 align="center" style="font-size:25px;color:DogerBlue"   class="modal-title">Settle ETF</h4>
+       </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="settleCurrency" class="control-label">Currency (ISO code):</label>
+                <input type="text" ng-model="settleModal.form.currency" class="form-control" id="settleCurrency">
+            </div>
+            <div class="form-group">
+                <label for="settleAmount" class="control-label">Amount (Int):</label>
+                <input type="text" ng-model="settleModal.form.amount" class="form-control" id="settleAmount">
+            </div>
+            <div ng-show="settleModal.formError" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Enter valid ETF settle parameters.
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="settleModal.cancel()" type="button" class="btn btn-info">Close</button>
+            <button ng-click="settleModal.settle()" type="button" class="btn btn-info">Settle</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="settleMsgModal.html">
+    <div class="modal-body" id="settle-modal-body">
+        <p align="center"><font color="blue"> {{ settleMsgModal.message }}<font/><p/>
+    </div>
+</script>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong>Cash Holding:</strong></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr bgcolor="#3399ff" class="primary" >
+                        <th>Amount</th>
+                        <th>Currency</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="info" ng-repeat="cash in demoApp.checkCashBalance">
+                        <td class="vert-align"><font color="blue"> {{cash.amount.quantity}}</font></td>
+                        <td class="vert-align"><font color="blue"> {{cash.amount.token}}</font></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong>ETF Holding:</strong></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+
+                    <tr  bgcolor="#3399ff"  >
+                        <th>Etf Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="info" ng-repeat="cash in demoApp.checkEtfBalance">
+                        <td class="vert-align"><font color="blue"> {{cash.etfName}}</font></td>
+                        <td class="vert-align"><font color="blue"> {{cash.quantity}}</font></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+
+<!--div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div ng-show="!demoApp.checkEtfBalance.length" class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">There are no recorded ETFs</h3>
+            </div>
+            <div class="panel-body">Use the "Create ETF" button to send an ETF to a peer.</div>
+        </div>
+        <div ng-show="demoApp.checkEtfBalance.length" class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Recorded ETFs:</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr class="primary">
+                        <th>ETF Name</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="primary" ng-repeat="etf in demoApp.checkEtfBalance">
+                        <!--td class="vert-align">{{etf.lender.substring(0, 10)}}</td>
+                        <td class="vert-align">{{etf.borrower.substring(0, 10)}}</td
+                        <td class="vert-align">{{etf.amount}}</td>
+                        <td class="vert-align">{{etf.etfName}}</td>
+                        <td class="info">
+                            <div class="btn-group" role="group">
+                                <button ng-click="demoApp.openEtfTransferModal(etf.linearId.id)" type="button" class="btn btn-primary">Transfer
+                                </button>
+                                <button ng-click="demoApp.openEtfSettleModal(etf.linearId.id)" type="button" class="btn btn-primary">Settle
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div-->
+</body>
+</html>
